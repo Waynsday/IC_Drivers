@@ -4,7 +4,7 @@ This repository is a code bank for custom C libraries for IC components to reduc
 STM32Cube is an STMicroelectronics original initiative to ease the developers life by reducing efforts, time and cost.
 
 ## Description
-This repository contains drivers compatible with the STM32F7xx series and requires the use of the STM32CubeIDE for code generation.
+This repository contains drivers compatible with the STM32F7xx series and requires the use of the STM32CubeIDE for code generation. This requires STM32 HAL to use. Coded in C.
 
 ### Tested Compatible Microcontrollers:
 - STM32F765
