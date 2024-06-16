@@ -34,6 +34,7 @@
 
 // Change according to your MT25QL chip. See Table 19: Device ID Data
 #define JEDEC_ID			0x20BA21U
+#define DUMMY_CLOCKS		0xFF
 /*
  * @brief MT25QL01GBBB Size Configuration.
  * All sizes measured in Bytes.
@@ -62,10 +63,10 @@
 #define RESET_MAX_TIME					1000U		/*Software Reset Recovery Time. Min 70 ns*/
 
 /*
- * @brief MT25QL01GBBB Error Codes
+ * @brief MT25QL01GBBB 4-byte addressing state
  */
-#define MT25QL_OK						(0)
-#define MT25QL_ERROR					(-1)
+#define ADDR_4B_EN						1			//enabled 4-byte addressing
+#define ADDR_4B_DI						0			//default 3-byte addressing
 
 /******************************************************************************
  * @brief MT25QL01GBBB Commands
@@ -267,7 +268,6 @@
 typedef enum{
 	MT25QL_FM1 = 0,
 	MT25QL_FM2
-
 }MT25QL_FM_NO_t;
 
 typedef enum{
@@ -277,10 +277,16 @@ typedef enum{
 	MT25QL_ERASE_CHIP,
 }MT25QL_Erase_t;
 
+typedef enum{
+	MT25QL_OK = 0,			//No error
+	MT25QL_ERROR = -1,		//Error
+	MT25QL_READY = 0		//Ready for program/erase
+}MT25QL_Status_t;
+
 
 
 //Basic command functions
-void MT25QL_Reset(SPI_HandleTypeDef *hspi, uint8_t FM);
+MT25QL_Status_t MT25QL_Reset(SPI_HandleTypeDef *hspi, uint8_t FM);
 uint32_t MT25QL_ReadID(SPI_HandleTypeDef *hspi, uint8_t FM);
 
 //Status register functions
@@ -289,31 +295,30 @@ uint8_t MT25QL_ReadFSR(SPI_HandleTypeDef *hspi, uint8_t FM);
 uint16_t MT25QL_ReadNONVOL(SPI_HandleTypeDef *hspi, uint8_t FM);
 uint8_t MT25QL_ReadVOL(SPI_HandleTypeDef *hspi, uint8_t FM);
 uint8_t MT25QL_ReadXADDR(SPI_HandleTypeDef *hspi, uint8_t FM);
-void MT25QL_WriteSR(SPI_HandleTypeDef *hspi, uint8_t FM, uint8_t reg_val);
-void MT25QL_WriteNONVOL(SPI_HandleTypeDef *hspi, uint8_t FM, uint16_t reg_val);
-void MT25QL_ClearFSR(SPI_HandleTypeDef *hspi, uint8_t FM);
+MT25QL_Status_t MT25QL_WriteSR(SPI_HandleTypeDef *hspi, uint8_t FM, uint8_t reg_val);
+MT25QL_Status_t MT25QL_ClearFSR(SPI_HandleTypeDef *hspi, uint8_t FM);
 
 //Read address functions
-void MT25QL_Read(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t startPage, uint8_t offset, uint32_t size, uint8_t *rData);
-void MT25QL_ReadAddr(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t address, uint32_t size, uint8_t *rData);
-void MT25QL_FastRead(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t startPage, uint8_t offset, uint32_t size, uint8_t *rData);
-void MT25QL_FastReadAddr(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t address, uint32_t size, uint8_t *rData);
-void MT25QL_4BRead(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t startPage, uint8_t offset, uint32_t size, uint8_t *rData);
-void MT25QL_4BReadAddr(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t address, uint32_t size, uint8_t *rData);
-void MT25QL_4BFastRead(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t startPage, uint8_t offset, uint32_t size, uint8_t *rData);
-void MT25QL_4BFastReadAddr(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t address, uint32_t size, uint8_t *rData);
+MT25QL_Status_t MT25QL_Read(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t startPage, uint8_t offset, uint32_t size, uint8_t *rData);
+MT25QL_Status_t MT25QL_ReadAddr(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t address, uint32_t size, uint8_t *rData);
+MT25QL_Status_t MT25QL_FastRead(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t startPage, uint8_t offset, uint32_t size, uint8_t *rData);
+MT25QL_Status_t MT25QL_FastReadAddr(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t address, uint32_t size, uint8_t *rData);
+MT25QL_Status_t MT25QL_4BRead(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t startPage, uint8_t offset, uint32_t size, uint8_t *rData);
+MT25QL_Status_t MT25QL_4BReadAddr(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t address, uint32_t size, uint8_t *rData);
+MT25QL_Status_t MT25QL_4BFastRead(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t startPage, uint8_t offset, uint32_t size, uint8_t *rData);
+MT25QL_Status_t MT25QL_4BFastReadAddr(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t address, uint32_t size, uint8_t *rData);
 
 //Program functions
-void MT25QL_PageProgram(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t page, uint16_t offset, uint32_t size, uint8_t *data);
-void MT25QL_4BPageProgram(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t page, uint16_t offset, uint32_t size, uint8_t *data);
+MT25QL_Status_t MT25QL_PageProgram(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t page, uint16_t offset, uint32_t size, uint8_t *data);
+MT25QL_Status_t MT25QL_4BPageProgram(SPI_HandleTypeDef *hspi, uint8_t FM, uint32_t page, uint16_t offset, uint32_t size, uint8_t *data);
 
 //4-byte addressing enable/disable
-void MT25QL_4BAddrEnable(SPI_HandleTypeDef *hspi, uint8_t FM);
-void MT25QL_4BAddrDisable(SPI_HandleTypeDef *hspi, uint8_t FM);
+MT25QL_Status_t MT25QL_4BAddrEnable(SPI_HandleTypeDef *hspi, uint8_t FM);
+MT25QL_Status_t MT25QL_4BAddrDisable(SPI_HandleTypeDef *hspi, uint8_t FM);
 
 //Block erase function
-void MT25QL_BlockErase(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM, uint32_t page, MT25QL_Erase_t BlockErase);
+MT25QL_Status_t MT25QL_BlockErase(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM, uint32_t page, MT25QL_Erase_t BlockErase);
 
-void MT25QL_Init(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM);
+MT25QL_Status_t MT25QL_Init(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM);
 
 #endif /* INC_MT25QLXX_H_ */
