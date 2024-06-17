@@ -25,6 +25,17 @@ Implement printf to utilize this driver. Must be using Trace Asynchronous Sw and
 2. Go to main.c and insert the contents of [printf.c](https://github.com/Waynsday/IC_Drivers/blob/main/printf.c) as a private prototype function.
 3. You can now use printf() as normal in your code and expect the output to be in the SWV ITM Data Console.
 
+## Known Issues & Fixes
+#### FM no longer working after using WriteNONVOL function or _Init function.
+This issue is a logical error in the first version of the code. The WriteNONVOL function has an issue in bit reversal which causes the register to go into an undetermined state. This can be fixed using the power loss recovery sequence.
+1. Create a new project.
+2. Configure SPI_SCK, SPI_MOSI (FM Pin DQ0), and HOLD Pin (FM Pin HOLD#/DQ3) as a GPIO_Output pin set to very high maximum output speed.
+3. Open [NVCIssue_Fix_main.c](https://github.com/Waynsday/IC_Drivers/blob/main/NVCIssue_Fix_main.c) and copy the clock_cycle function. Replace appropriate CS pin in the function.
+4. Copy the code inside the main function to implement the power loss recovery sequenece.
+5. Run / Debug the code. **DO NOT** use breakpoints. The sequence must be done in order without interruption.
+6. Go back to a working project where the SPI peripheral is properly configured. Extended SPI should be working and can be tested using MT25QL_ReadID() function.
+7. Run the MT25QL_ResetNONVOL() function onto the same flash memory using SPI. Use ReadNONVOL() function to verify if register value is reset to 0xFFFF.
+
 ## MIT License
 
 Copyright (c) 2024 Wayne Akeboshi
