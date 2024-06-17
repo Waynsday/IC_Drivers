@@ -26,7 +26,7 @@ Implement printf to utilize this driver. Must be using Trace Asynchronous Sw and
 3. You can now use printf() as normal in your code and expect the output to be in the SWV ITM Data Console.
 
 ## Known Issues & Fixes
-#### FM no longer working after using WriteNONVOL function or _Init function.
+### FM no longer working after using WriteNONVOL function or _Init function.
 This issue is a logical error in the first version of the code. The WriteNONVOL function has an issue in bit reversal which causes the register to go into an undetermined state. This can be fixed using the power loss recovery sequence.
 1. Create a new project.
 2. Configure SPI_SCK, SPI_MOSI (FM Pin DQ0), and HOLD Pin (FM Pin HOLD#/DQ3) as a GPIO_Output pin set to very high maximum output speed.
