@@ -296,6 +296,7 @@ uint16_t MT25QL_ReadNONVOL(SPI_HandleTypeDef *hspi, uint8_t FM);
 uint8_t MT25QL_ReadVOL(SPI_HandleTypeDef *hspi, uint8_t FM);
 uint8_t MT25QL_ReadXADDR(SPI_HandleTypeDef *hspi, uint8_t FM);
 MT25QL_Status_t MT25QL_WriteSR(SPI_HandleTypeDef *hspi, uint8_t FM, uint8_t reg_val);
+MT25QL_Status_t MT25QL_ResetNONVOL(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM);
 MT25QL_Status_t MT25QL_ClearFSR(SPI_HandleTypeDef *hspi, uint8_t FM);
 
 //Read address functions

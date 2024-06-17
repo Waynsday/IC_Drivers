@@ -348,13 +348,12 @@ uint8_t MT25QL_ReadXADDR(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM)
  */
 MT25QL_Status_t MT25QL_WriteSR(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM, uint8_t reg_val)
 {
-	//	NOT TESTED
 	uint8_t tData[2];
 	tData[0] = WRITE_STATUS_REG_CMD;
 	tData[1] = reg_val;
 	write_enable(hspi, FM);
 	csLOW(FM);
-	if(SPI_Write(hspi, tData, 1) != MT25QL_OK){
+	if(SPI_Write(hspi, tData, 2) != MT25QL_OK){
 		printf("Write SR failed");
 		return MT25QL_ERROR;
 	}
@@ -364,6 +363,30 @@ MT25QL_Status_t MT25QL_WriteSR(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM, uint8
 	return MT25QL_OK;
 	//write enable reset is automatic
 }
+
+/*********************************************************************
+ * @brief             - Reset Nonvolatile Configuration Register
+ * @param[in]         - Pointer to SPI peripheral
+ * @param[in]         - MT25QL_FM1 | MT25QL_FM2
+ * @return            - signed 8-bit int: 0 - OK, -1 - Error
+ * @Note              - See Table 3: Status Register
+ */
+MT25QL_Status_t MT25QL_ResetNONVOL(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM)
+{
+	uint8_t tData[3] = {WRITE_NONVOL_CFG_REG_CMD, 0xFF, 0xFF};
+	write_enable(hspi, FM);
+	csLOW(FM);
+	if(SPI_Write(hspi, tData, 3) != MT25QL_OK){
+		printf("Write Reset NONVOL failed");
+		return MT25QL_ERROR;
+	}
+	csHIGH(FM);
+	wait_for_ready(hspi, FM);
+	write_disable(hspi, FM);
+	return MT25QL_OK;
+	//write enable reset is automatic
+}
+
 
 /*********************************************************************
  * @brief             - Clear flag status register
@@ -771,7 +794,7 @@ MT25QL_Status_t MT25QL_4BAddrEnable(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM)
 		return MT25QL_ERROR;
 	}
 	csHIGH(FM);
-	printf("4-byte address mode enabled");
+	printf("4-byte address mode enabled\n");
 	return MT25QL_OK;
 }
 /*********************************************************************
@@ -885,7 +908,6 @@ MT25QL_Status_t MT25QL_Init(SPI_HandleTypeDef *hspi, MT25QL_FM_NO_t FM)
 		printf("4-Byte Address failed to enable\n");
 		return MT25QL_ERROR;
 	}
-	printf("4-byte address mode enabled");
 	printf("FM Initialized\n");
 	return MT25QL_OK;
 }
